@@ -9,15 +9,17 @@ interface CodeGenerator {
     fun generate(query: Query): String
 }
 
-class Query(var text: String)
+class Query(text: String = "") {
+    var prompt: String = text
+        private set
 
-fun Query(init: Query.() -> Unit): Query {
+    fun text(text: String) {
+        this.prompt = text
+    }
+}
+
+inline fun Query(init: Query.() -> Unit): Query {
     val query = Query("")
     query.init()
     return query
-}
-
-fun Query.text(text: String): String {
-    this.text += text
-    return text
 }

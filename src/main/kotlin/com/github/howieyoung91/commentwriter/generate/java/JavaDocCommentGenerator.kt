@@ -9,6 +9,6 @@ import com.github.howieyoung91.commentwriter.generate.Query
  */
 object JavaDocCommentGenerator : CommentGenerator {
     override fun generate(query: Query): String {
-        return query.text
+        return query.prompt
     }
 }

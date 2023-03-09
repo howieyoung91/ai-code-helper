@@ -1,7 +1,6 @@
 package com.github.howieyoung91.commentwriter.action
 
 import com.github.howieyoung91.commentwriter.generate.Query
-import com.github.howieyoung91.commentwriter.generate.text
 import com.github.howieyoung91.commentwriter.generate.java.JavaDocCommentGenerator
 import com.github.howieyoung91.commentwriter.util.CommentWriter
 import com.intellij.openapi.actionSystem.AnAction
@@ -14,7 +13,7 @@ import com.intellij.psi.PsiJavaFile
  * @author Howie Young
  * @date 2023/03/09 17:18
  */
-class CommentWeavingAction : AnAction() {
+class CommentCompletionAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
 
@@ -29,10 +28,10 @@ class CommentWeavingAction : AnAction() {
             }
         }
     }
-
-    private fun generateComment() = JavaDocCommentGenerator.generate(
-        Query {
-            text("/** TODO */")
-        }
-    )
 }
+
+private fun generateComment() = JavaDocCommentGenerator.generate(
+    Query {
+        text("/** TODO */")
+    }
+)

@@ -8,7 +8,12 @@ group = "com.github.howieyoung91"
 version = "0.1"
 
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:3.14.9")
 }
 
 // Configure Gradle IntelliJ Plugin
