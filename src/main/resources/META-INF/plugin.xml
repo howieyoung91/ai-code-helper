@@ -25,8 +25,8 @@
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
     <actions>
-        <action id="com.github.howieyoung91.commentwriter.action.CommentGenerateAction"
-                class="com.github.howieyoung91.commentwriter.action.CommentGenerateAction" text="Generate Doc Comment">
+        <action id="com.github.howieyoung91.commentwriter.action.CommentWeavingAction"
+                class="com.github.howieyoung91.commentwriter.action.CommentWeavingAction" text="Generate Doc Comment">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
     </actions>
