@@ -1,7 +1,11 @@
 package com.github.howieyoung91.commentwriter.action
 
+import com.github.howieyoung91.commentwriter.util.CommentWriter
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.psi.PsiElementFactory
+import com.intellij.psi.PsiJavaFile
 
 /**
  * @author Howie Young
@@ -9,6 +13,19 @@ import com.intellij.openapi.actionSystem.AnActionEvent
  */
 class CommentGenerateAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
+        val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
 
+        if (file is PsiJavaFile) {
+            val project = e.project ?: return
+            val factory = PsiElementFactory.getInstance(project)
+            file.classes.forEach { clazz ->
+                clazz.methods.filterNotNull().forEach { method ->
+                    val comment = factory.createDocCommentFromText(generateComment(), method)
+                    CommentWriter.writeJavadoc(method, comment);
+                }
+            }
+        }
     }
+
+    private fun generateComment() = "/** TODO */"
 }
