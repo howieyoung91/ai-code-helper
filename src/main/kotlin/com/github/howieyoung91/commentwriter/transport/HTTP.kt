@@ -13,6 +13,8 @@ class HTTP private constructor() {
         val client by lazy {
             OkHttpClient.Builder()
                 .connectionPool(ConnectionPool(20, 10, TimeUnit.MINUTES))
+                .callTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
                 .build()
         }
     }

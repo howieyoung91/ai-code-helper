@@ -35,7 +35,7 @@ object CommentWriter {
             }
         }
         catch (throwable: Throwable) {
-            log.error("Fail to write Java Doc. Cause by: ", throwable)
+            log.error("Fail to write Java Doc. Cause: ", throwable)
         }
     }
 

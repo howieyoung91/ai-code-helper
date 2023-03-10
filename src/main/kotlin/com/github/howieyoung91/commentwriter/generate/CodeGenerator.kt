@@ -1,12 +1,15 @@
 package com.github.howieyoung91.commentwriter.generate
 
+import com.intellij.psi.PsiElementFactory
+import com.intellij.psi.PsiMethod
+
 
 /**
  * @author Howie Young
  * @date 2023/03/09 18:14
  */
 interface CodeGenerator {
-    fun generate(query: Query): String
+    fun generate(query: Query, method: PsiMethod, factory: PsiElementFactory): String
 }
 
 class Query(text: String = "") {
