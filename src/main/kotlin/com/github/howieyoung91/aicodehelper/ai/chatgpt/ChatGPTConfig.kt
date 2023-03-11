@@ -1,4 +1,4 @@
-package com.github.howieyoung91.commentwriter.ai.chatgpt
+package com.github.howieyoung91.aicodehelper.ai.chatgpt
 
 /**
  * ChatGPT 配置
@@ -8,7 +8,11 @@ package com.github.howieyoung91.commentwriter.ai.chatgpt
  */
 class ChatGPTConfig private constructor(init: ChatGPTConfig.() -> Unit) {
     var apiKey = ""; private set
-    var url = ""; private set
+
+    // var url = ""; private set
+    var model = "text-davinci-003"; private set
+    var maxToken = 1000; private set
+    var temperature = 0.8; private set
 
     init {
         this.init()

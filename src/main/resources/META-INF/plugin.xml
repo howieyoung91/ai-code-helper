@@ -1,11 +1,11 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>com.github.howieyoung91.comment-writer</id>
+    <id>com.github.howieyoung91.ai-code-helper</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Comment-Writer</name>
+    <name>AI Code Helper</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="ishowieyoung@icloud.com">Howie Young</vendor>
@@ -25,9 +25,15 @@
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
     <actions>
-        <action id="com.github.howieyoung91.commentwriter.action.CommentCompletionAction"
-                class="com.github.howieyoung91.commentwriter.action.CommentCompletionAction" text="Generate Doc Comment">
+        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
+                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
+                text="Generate Doc Comment for This Class">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodAction"
+                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodAction"
+                text="Generate Doc for Method">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>

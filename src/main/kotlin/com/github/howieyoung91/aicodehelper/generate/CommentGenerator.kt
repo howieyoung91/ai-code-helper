@@ -1,4 +1,4 @@
-package com.github.howieyoung91.commentwriter.generate
+package com.github.howieyoung91.aicodehelper.generate
 
 /**
  * @author Howie Young

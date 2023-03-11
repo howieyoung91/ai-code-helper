@@ -1,4 +1,4 @@
-package com.github.howieyoung91.commentwriter.ai.exception
+package com.github.howieyoung91.aicodehelper.ai.exception
 
 /**
  * @author Howie Young

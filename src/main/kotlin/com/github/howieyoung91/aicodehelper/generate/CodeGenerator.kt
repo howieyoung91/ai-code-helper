@@ -1,4 +1,4 @@
-package com.github.howieyoung91.commentwriter.generate
+package com.github.howieyoung91.aicodehelper.generate
 
 import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiMethod
@@ -9,15 +9,15 @@ import com.intellij.psi.PsiMethod
  * @date 2023/03/09 18:14
  */
 interface CodeGenerator {
-    fun generate(query: Query, method: PsiMethod, factory: PsiElementFactory): String
+    fun generate(query: Query, method: PsiMethod, factory: PsiElementFactory)
 }
 
 class Query(text: String = "") {
     var prompt: String = text
         private set
 
-    fun text(text: String) {
-        this.prompt = text
+    fun prompt(prompt: String) {
+        this.prompt = prompt
     }
 }
 

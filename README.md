@@ -1,3 +1,3 @@
-# Comment Writer
+# AI Coder Helper
 
 a idea plugin

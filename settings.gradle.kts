@@ -1,1 +1,1 @@
-rootProject.name = "comment-writer"
+rootProject.name = "ai-code-helper"

@@ -1,4 +1,4 @@
-package com.github.howieyoung91.commentwriter.util
+package com.github.howieyoung91.aicodehelper.util
 
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.Logger
