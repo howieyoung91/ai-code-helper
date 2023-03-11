@@ -1,5 +1,7 @@
 package com.github.howieyoung91.aicodehelper.ai.chatgpt
 
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.resolveApiKey
 import com.github.howieyoung91.aicodehelper.ai.exception.AiException
 import okhttp3.*
 import java.io.IOException
@@ -21,7 +23,7 @@ class ChatGPTClient private constructor() {
     }
 
     private fun canComplete(request: ChatGPTRequest, config: ChatGPTConfig): Boolean {
-        if (config.apiKey.isEmpty()) {
+        if (config.apikey.isEmpty()) {
             request.callback.onFail(
                 AiException(
                     """
@@ -52,12 +54,13 @@ class ChatGPTClient private constructor() {
     }
 
     private fun createRequest(chatgptRequest: ChatGPTRequest, config: ChatGPTConfig = ChatGPT.config): Request {
+        val body = body(chatgptRequest, config)
         return Request.Builder()
             .header("Content-Type", JSON_MEDIA_TYPE)
-            .header("Authorization", config.apiKey)
+            .header("Authorization", resolveApiKey(config.apikey))
             .post(
                 RequestBody.create(
-                    MediaType.get(JSON_MEDIA_TYPE), body(chatgptRequest, config)
+                    MediaType.get(JSON_MEDIA_TYPE), body
                 )
             )
             .url("https://api.openai.com/v1/completions") // TODO 支持自己的服务器

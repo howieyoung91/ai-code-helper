@@ -1,5 +1,6 @@
 package com.github.howieyoung91.aicodehelper.action
 
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
 import com.github.howieyoung91.aicodehelper.util.Plugin
@@ -18,6 +19,7 @@ import com.intellij.psi.util.PsiUtilCore
  */
 class CommentGenerate4ClassAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
+        val instance = ChatGPTConfig.instance
         val file = e.getData(CommonDataKeys.PSI_FILE) ?: return
         val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         if (file is PsiJavaFile) {

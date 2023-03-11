@@ -11,6 +11,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiMethod
 
+private const val FAIL_MESSAGE = "[AI Code Helper] Fail to generate."
+
 /**
  * @author Howie Young
  * @date 2023/03/09 18:16
@@ -26,18 +28,17 @@ object JavaDocCommentGenerator : CommentGenerator, AiBased {
                 prompt("以下代码的具体逻辑是什么？\n ${query.prompt}".replace("\n", "\\n").replace("\"", "\\\""))
                 callback {
                     onFail = {
-                        writeJavaDocComment(factory, method, this.message ?: "[AI Code Helper] Fail to generate.")
+                        writeJavaDocComment(factory, method, this.message ?: FAIL_MESSAGE)
                     }
                     onResponse = onResponse@{
-                        val jsonBody = JSON.fromJson(this.content)
+                        val jsonBody = JSON.fromJson(this.content) // TODO handle error
                         log.info(content)
                         if (jsonBody == null) {
-                            writeJavaDocComment(factory, method, "")
+                            writeJavaDocComment(factory, method, FAIL_MESSAGE)
                             return@onResponse
                         }
 
                         val choice = jsonBody.choices.firstOrNull()
-                        // TODO handle error message
                         writeJavaDocComment(factory, method, choice?.text ?: "")
                     }
                 }
@@ -46,14 +47,14 @@ object JavaDocCommentGenerator : CommentGenerator, AiBased {
     }
 
     private fun noticeRequesting(factory: PsiElementFactory, method: PsiMethod) {
-        val commentElem = factory.createDocCommentFromText("/** requesting, just a moment. */", method)
+        val commentElem = factory.createDocCommentFromText("/** [AI Code Helper] requesting, just a moment. */", method)
         CommentWriter.writeJavadoc(method, commentElem)
     }
 
     private fun writeJavaDocComment(factory: PsiElementFactory, method: PsiMethod, comment: String) {
         var c: String = comment
         if (comment.isEmpty()) {
-            c = "[AI Code Helper] Fail to generate";
+            c = FAIL_MESSAGE
         }
         val commentElem = factory.createDocCommentFromText("/** $c */", method)
         CommentWriter.writeJavadoc(method, commentElem)

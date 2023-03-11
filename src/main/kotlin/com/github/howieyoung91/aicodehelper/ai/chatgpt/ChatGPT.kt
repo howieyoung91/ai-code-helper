@@ -1,5 +1,6 @@
 package com.github.howieyoung91.aicodehelper.ai.chatgpt
 
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.exception.AiException
 
 class ChatGPT private constructor() {

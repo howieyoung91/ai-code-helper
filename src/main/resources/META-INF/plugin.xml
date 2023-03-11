@@ -23,17 +23,26 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable
+                parentId="tools"
+                instance="com.github.howieyoung91.aicodehelper.config.PluginConfigurable"
+                id="com.github.howieyoung91.aicodehelper.config.PluginConfigurable"
+                displayName="AI Code Helper"
+                nonDefaultProject="true"/>
+        <applicationService
+                serviceImplementation="com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig"/>
     </extensions>
+
     <actions>
         <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
                 class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
-                text="Generate Doc Comment for This Class">
+                text="Generate Doc Comment for Class">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
         <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodAction"
                 class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodAction"
                 text="Generate Doc for Method">
-            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>
