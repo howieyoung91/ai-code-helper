@@ -13,8 +13,9 @@ repositories {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:okhttp:3.14.9")
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation("com.github.howieyoung91:chatgpt-client:0.1")
+    // implementation("com.squareup.okhttp3:okhttp:3.14.9")
+    // implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
 }
 
 // Configure Gradle IntelliJ Plugin
