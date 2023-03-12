@@ -31,8 +31,8 @@
     </extensions>
 
     <actions>
-        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
-                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
+        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodsInClassAction"
+                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4MethodsInClassAction"
                 text="Generate Comment for All Methods in Class">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
