@@ -1,5 +1,6 @@
 package com.github.howieyoung91.aicodehelper.config
 
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfigPanel
 import com.intellij.openapi.options.Configurable
@@ -22,27 +23,38 @@ class PluginConfigurable : Configurable {
         return isModified(chatgpt)
     }
 
-    private fun isModified(chatgpt: ChatGPTConfig): Boolean = (
-            (panel!!.apikey != chatgpt.apikey)
-                    or (panel!!.model != chatgpt.model)
-                    or ((call { panel!!.maxToken.toInt() } ?: chatgpt.maxToken) != chatgpt.maxToken)
-                    or ((call { panel!!.temperature.toDouble() } ?: chatgpt.temperature) != chatgpt.temperature)
-            )
+    private fun isModified(chatgpt: ChatGPTConfig): Boolean {
+        val p = panel ?: return false
+        return (
+                (p.apikey != chatgpt.apikey)
+                        or (p.model != chatgpt.model)
+                        or ((call { p.maxToken.toInt() } ?: chatgpt.maxToken) != chatgpt.maxToken)
+                        or ((call { p.temperature.toDouble() } ?: chatgpt.temperature) != chatgpt.temperature)
+                        or (p.promptTemplate != chatgpt.promptTemplate)
+                        or (p.outputTemplate != chatgpt.outputTemplate)
+                )
+    }
 
     override fun apply() {
+        val p = panel ?: return
         val chatgpt = ChatGPTConfig.instance
-        chatgpt.apikey = panel!!.apikey
-        chatgpt.model = panel!!.model
-        chatgpt.maxToken = call { panel!!.maxToken.toInt() } ?: 1000
-        chatgpt.temperature = call { panel!!.temperature.toDouble() } ?: 0.8
+        chatgpt.apikey = p.apikey
+        chatgpt.model = p.model
+        chatgpt.maxToken = call { p.maxToken.toInt() } ?: 1024
+        chatgpt.temperature = call { p.temperature.toDouble() } ?: 0.5
+        chatgpt.promptTemplate = p.promptTemplate
+        chatgpt.outputTemplate = p.outputTemplate
     }
 
     override fun reset() {
-        val chatgpt = ChatGPTConfig.instance
-        panel!!.apikey = chatgpt.apikey
-        panel!!.model = chatgpt.model
-        panel!!.maxToken = chatgpt.maxToken.toString()
-        panel!!.temperature = chatgpt.temperature.toString()
+        val p = panel ?: return
+        val chatgpt = ChatGPT.config
+        p.apikey = chatgpt.apikey
+        p.model = chatgpt.model
+        p.maxToken = chatgpt.maxToken.toString()
+        p.temperature = chatgpt.temperature.toString()
+        p.promptTemplate = chatgpt.promptTemplate
+        p.outputTemplate = chatgpt.outputTemplate
     }
 
     override fun getPreferredFocusedComponent(): JComponent {

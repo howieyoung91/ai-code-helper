@@ -2,6 +2,8 @@ package com.github.howieyoung91.aicodehelper.generate.java
 
 import com.github.howieyoung91.aicodehelper.ai.AiBased
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
+import com.github.howieyoung91.aicodehelper.config.OUTPUT_PLACEHOLDER
+import com.github.howieyoung91.aicodehelper.config.PROMPT_PLACEHOLDER
 import com.github.howieyoung91.aicodehelper.generate.CommentGenerator
 import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.util.CommentWriter
@@ -14,6 +16,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 private const val FAIL_MESSAGE = "[AI Code Helper] Fail to generate."
+private const val REQUESTING_MESSAGE = "/** [AI Code Helper] requesting, just a moment. */"
 
 /**
  * @author Howie Young
@@ -28,7 +31,8 @@ object JavaDocCommentGenerator : CommentGenerator, AiBased {
             object : Callback<CompletionResponse> {
                 override fun onResponse(call: Call<CompletionResponse>, response: Response<CompletionResponse>) {
                     val comment = determineComment(response)
-                    writeJavaDocComment(factory, method, comment)
+                    val resolved = ChatGPT.config.outputTemplate.replace(OUTPUT_PLACEHOLDER, comment)
+                    writeJavaDocComment(factory, method, resolved)
                 }
 
                 override fun onFailure(call: Call<CompletionResponse>, t: Throwable) {
@@ -41,17 +45,19 @@ object JavaDocCommentGenerator : CommentGenerator, AiBased {
 }
 
 private fun createRequest(query: Query): CompletionRequest {
-    val request = CompletionRequest(
-        ChatGPT.config.model,
-        "以下代码的具体逻辑是什么？\n ${query.prompt}".replace("\n", "\\n").replace("\"", "\\\"")
-    )
+    val resolvedPrompt =
+        ChatGPT.config.promptTemplate.replace(
+            PROMPT_PLACEHOLDER,
+            query.prompt.replace("\n", "\\n").replace("\"", "\\\"")
+        )
+    val request = CompletionRequest(ChatGPT.config.model, resolvedPrompt)
     request.maxTokens = ChatGPT.config.maxToken
     request.temperature = ChatGPT.config.temperature
     return request
 }
 
 private fun noticeRequesting(factory: PsiElementFactory, method: PsiMethod) {
-    val commentElem = factory.createDocCommentFromText("/** [AI Code Helper] requesting, just a moment. */", method)
+    val commentElem = factory.createDocCommentFromText(REQUESTING_MESSAGE, method)
     CommentWriter.writeJavadoc(method, commentElem)
 }
 
