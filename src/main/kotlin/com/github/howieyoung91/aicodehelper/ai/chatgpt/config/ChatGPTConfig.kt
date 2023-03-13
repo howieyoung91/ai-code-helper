@@ -1,3 +1,8 @@
+/*
+ * Copyright ©2023 Howie Young
+ * Licensed under the GPL version 3
+ */
+
 package com.github.howieyoung91.aicodehelper.ai.chatgpt.config
 
 import com.github.howieyoung91.aicodehelper.config.OUTPUT_PLACEHOLDER
