@@ -35,7 +35,7 @@ object JavaDocCommentGenerator : CommentGenerator, AiBased {
         noticeRequesting(factory, method)
 
         val request = createRequest(query)
-        ChatGPT.client.complete(request,
+        ChatGPT.client.value.complete(request,
             object : Callback<CompletionResponse> {
                 override fun onResponse(call: Call<CompletionResponse>, response: Response<CompletionResponse>) {
                     val comment = determineComment(response)

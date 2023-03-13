@@ -7,10 +7,32 @@ package com.github.howieyoung91.aicodehelper.ai.chatgpt
 
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.chatgpt.client.ChatGPTClient
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.ConnectionPool
+import okhttp3.OkHttpClient
+import retrofit2.converter.moshi.MoshiConverterFactory
+import java.util.concurrent.TimeUnit
 
 class ChatGPT private constructor() {
     companion object {
-        var config = ChatGPTConfig.instance
-        var client = ChatGPTClient(config.apikey)
+        val config: ChatGPTConfig by lazy { ChatGPTConfig.instance }
+        var client: Lazy<ChatGPTClient> = lazy {
+            ChatGPTClient(config.apikey) {
+                client(
+                    OkHttpClient.Builder()
+                        .connectionPool(ConnectionPool())
+                        .callTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .build()
+                )
+                baseUrl("https://api.openai.com")
+                addConverterFactory(
+                    MoshiConverterFactory.create(
+                        Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+                    )
+                )
+            }
+        }
     }
 }

@@ -45,7 +45,7 @@ class PluginConfigurable : Configurable {
         val p = panel ?: return
         val chatgpt = ChatGPT.config
         chatgpt.apikey = p.apikey
-        ChatGPT.client = ChatGPTClient(chatgpt.apikey) // change a client
+        ChatGPT.client = lazy { ChatGPTClient(chatgpt.apikey) }// change a client
         chatgpt.model = p.model
         chatgpt.maxToken = call { p.maxToken.toInt() } ?: 1024
         chatgpt.temperature = call { p.temperature.toDouble() } ?: 0.5
