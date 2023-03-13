@@ -5,7 +5,7 @@ import com.github.howieyoung91.chatgpt.client.ChatGPTClient
 
 class ChatGPT private constructor() {
     companion object {
-        val config = ChatGPTConfig.instance
-        val client = ChatGPTClient(config.apikey)
+        var config = ChatGPTConfig.instance
+        var client = ChatGPTClient(config.apikey)
     }
 }

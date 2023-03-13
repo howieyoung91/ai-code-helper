@@ -15,8 +15,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class ChatGPTConfig : PersistentStateComponent<ChatGPTConfig> {
     var apikey = ""
     var model = "text-davinci-003"
-    var maxToken = 1000
-    var temperature = 0.8
+    var maxToken = 1024
+    var temperature = 0.5
     var promptTemplate: String = "What does following code means?\n $PROMPT_PLACEHOLDER"
     var outputTemplate: String = OUTPUT_PLACEHOLDER
 

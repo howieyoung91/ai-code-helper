@@ -3,6 +3,7 @@ package com.github.howieyoung91.aicodehelper.config
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfigPanel
+import com.github.howieyoung91.chatgpt.client.ChatGPTClient
 import com.intellij.openapi.options.Configurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
@@ -37,8 +38,9 @@ class PluginConfigurable : Configurable {
 
     override fun apply() {
         val p = panel ?: return
-        val chatgpt = ChatGPTConfig.instance
+        val chatgpt = ChatGPT.config
         chatgpt.apikey = p.apikey
+        ChatGPT.client = ChatGPTClient(chatgpt.apikey)
         chatgpt.model = p.model
         chatgpt.maxToken = call { p.maxToken.toInt() } ?: 1024
         chatgpt.temperature = call { p.temperature.toDouble() } ?: 0.5
