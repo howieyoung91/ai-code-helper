@@ -9,12 +9,11 @@ import com.intellij.psi.PsiFile
  */
 
 object PSI {
-    inline fun <reified T> getParent(elem: PsiElement): T? {
+    fun <T> getParent(elem: PsiElement, clazz: Class<T>): T? {
         var e = elem
-        while (e !is PsiFile && e !is T) {
+        while (e !is PsiFile && !clazz.isAssignableFrom(e.javaClass)) {
             e = e.parent
         }
-
-        return if (e is T) e else null
+        return if (clazz.isAssignableFrom(e.javaClass)) e as T else null
     }
 }
