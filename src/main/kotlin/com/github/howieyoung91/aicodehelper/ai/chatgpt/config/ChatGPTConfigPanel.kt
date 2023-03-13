@@ -7,6 +7,7 @@ package com.github.howieyoung91.aicodehelper.ai.chatgpt.config
 
 import com.github.howieyoung91.aicodehelper.ui.OnlyFloatTextField
 import com.github.howieyoung91.aicodehelper.ui.OnlyNumberTextField
+import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBTextArea
 import com.intellij.ui.components.JBTextField
@@ -17,20 +18,20 @@ import javax.swing.JPanel
 class ChatGPTConfigPanel {
     val panel: JPanel
     private val apikeyInput = JBTextField()
-    private val modelInput = JBTextField()
     private val maxTokenInput = OnlyNumberTextField()
     private val temperatureInput = OnlyFloatTextField()
     private val promptTemplateInput = JBTextArea()
     private val outputTemplateInput = JBTextArea()
+    private val modelsComboBox = ComboBox(COMPLETION_MODELS)
 
     init {
         panel = FormBuilder.createFormBuilder()
             .addLabeledComponent(JBLabel("API key:"), apikeyInput, 1, false)
-            .addLabeledComponent(JBLabel("Model:"), modelInput, 1, false)
             .addLabeledComponent(JBLabel("Max token:"), maxTokenInput, 1, false)
             .addLabeledComponent(JBLabel("Temperature:"), temperatureInput, 1, false)
             .addLabeledComponent(JBLabel("Prompt template:"), promptTemplateInput, 1, false)
             .addLabeledComponent(JBLabel("Output template:"), outputTemplateInput, 1, false)
+            .addLabeledComponent(JBLabel("Models:"), modelsComboBox, 1, false)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -44,10 +45,12 @@ class ChatGPTConfigPanel {
         }
 
     var model: String
-        get() = modelInput.text
+        get() = modelsComboBox.item
         set(newModel) {
-            modelInput.text = newModel
+            val index = COMPLETION_MODELS_MAP[newModel] ?: 0
+            modelsComboBox.selectedIndex = index
         }
+
     var maxToken: String
         get() = maxTokenInput.text
         set(newModel) {

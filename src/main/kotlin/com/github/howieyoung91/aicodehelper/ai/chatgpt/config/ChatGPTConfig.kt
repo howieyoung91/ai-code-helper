@@ -13,13 +13,29 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
+val COMPLETION_MODELS = arrayOf(
+    "text-davinci-003", // default
+    "babbage", "davinci", "text-davinci-001", "ada", "curie-instruct-beta", "code-cushman-001",
+    "text-ada-001", "text-curie-001", "davinci-instruct-beta", "text-davinci-002",
+    "text-babbage-001", "code-davinci-002", "curie"
+)
+
+val COMPLETION_MODELS_MAP = object : HashMap<String, Int>() {
+    init {
+        COMPLETION_MODELS.withIndex().forEach { (i, model) ->
+            put(model, i)
+        }
+    }
+}
+
+
 @State(
     name = "com.github91.howieyoung91.aicodehelper.ChatGPTConfig",
     storages = [Storage("aicodehelper.xml")]
 )
 class ChatGPTConfig : PersistentStateComponent<ChatGPTConfig> {
     var apikey = ""
-    var model = "text-davinci-003"
+    var model = COMPLETION_MODELS[0]
     var maxToken = 1024
     var temperature = 0.5
     var promptTemplate: String = "What does following code means?\n $PROMPT_PLACEHOLDER"

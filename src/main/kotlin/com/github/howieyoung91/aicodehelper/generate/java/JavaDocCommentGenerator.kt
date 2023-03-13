@@ -91,20 +91,22 @@ private fun writeJavaDocComment(factory: PsiElementFactory, method: PsiMethod, c
     if (c.isNullOrEmpty()) {
         c = FAIL_MESSAGE
     }
-    try {
-        var commentElem: PsiDocComment? = null
-        var project: Project? = null
-        ReadAction.run<Throwable> {
-            // 使用 IDEA 内部线程运行，否则读操作是不被允许的
-            commentElem = factory.createDocCommentFromText("/** $c */", method)
+
+    var commentElem: PsiDocComment? = null
+    var project: Project? = null
+    ReadAction.run<Throwable> { // 使用 IDEA 内部线程运行，否则读操作是不被允许的
+        try {
             project = method.project
+            commentElem = factory.createDocCommentFromText("/** $c */", method)
         }
-        if (commentElem == null || project == null) {
-            return
+        catch (e: Throwable) {
+            // TODO 处理 ChatGPT 响应的非法字符
+            e.printStackTrace()
+            commentElem = factory.createDocCommentFromText("/** $FAIL_MESSAGE */", method)
         }
-        CommentWriter.writeJavadoc(project!!, method, commentElem!!)
     }
-    catch (ignored: Throwable) {
-        ignored.printStackTrace()
+    if (project == null || commentElem == null) {
+        return
     }
+    CommentWriter.writeJavadoc(project!!, method, commentElem!!)
 }
