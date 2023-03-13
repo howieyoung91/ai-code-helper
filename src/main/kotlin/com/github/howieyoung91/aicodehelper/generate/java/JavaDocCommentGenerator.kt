@@ -14,8 +14,11 @@ import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.util.CommentWriter
 import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
+import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.javadoc.PsiDocComment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,16 +66,7 @@ private fun createRequest(query: Query): CompletionRequest {
 
 private fun noticeRequesting(factory: PsiElementFactory, method: PsiMethod) {
     val commentElem = factory.createDocCommentFromText(REQUESTING_MESSAGE, method)
-    CommentWriter.writeJavadoc(method, commentElem)
-}
-
-private fun writeJavaDocComment(factory: PsiElementFactory, method: PsiMethod, comment: String?) {
-    var c: String? = comment
-    if (c.isNullOrEmpty()) {
-        c = FAIL_MESSAGE
-    }
-    val commentElem = factory.createDocCommentFromText("/** $c */", method)
-    CommentWriter.writeJavadoc(method, commentElem)
+    CommentWriter.writeJavadoc(method.project, method, commentElem)
 }
 
 private fun determineComment(response: Response<CompletionResponse>): String {
@@ -90,4 +84,27 @@ private fun determineComment(response: Response<CompletionResponse>): String {
         }
     }
     return comment
+}
+
+private fun writeJavaDocComment(factory: PsiElementFactory, method: PsiMethod, comment: String?) {
+    var c: String? = comment
+    if (c.isNullOrEmpty()) {
+        c = FAIL_MESSAGE
+    }
+    try {
+        var commentElem: PsiDocComment? = null
+        var project: Project? = null
+        ReadAction.run<Throwable> {
+            // 使用 IDEA 内部线程运行，否则读操作是不被允许的
+            commentElem = factory.createDocCommentFromText("/** $c */", method)
+            project = method.project
+        }
+        if (commentElem == null || project == null) {
+            return
+        }
+        CommentWriter.writeJavadoc(project!!, method, commentElem!!)
+    }
+    catch (ignored: Throwable) {
+        ignored.printStackTrace()
+    }
 }

@@ -29,9 +29,8 @@ object CommentWriter {
      * @author Howie Young
      */
     @JvmStatic
-    fun writeJavadoc(target: PsiElement, comment: PsiDocComment) {
+    fun writeJavadoc(project: Project, target: PsiElement, comment: PsiDocComment) {
         try {
-            val project = target.project
             WriteCommandAction.runWriteCommandAction(project) {
                 if (target.containingFile != null && target is PsiJavaDocumentedElement) {
                     doWriteJavaDoc(target, comment)
