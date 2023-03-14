@@ -13,6 +13,8 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 
+const val CHATGPT_API_URL = "https://api.openai.com"
+
 val COMPLETION_MODELS = arrayOf(
     "text-davinci-003", // default
     "babbage", "davinci", "text-davinci-001", "ada", "curie-instruct-beta", "code-cushman-001",
@@ -40,6 +42,7 @@ class ChatGPTConfig : PersistentStateComponent<ChatGPTConfig> {
     var temperature = 0.5
     var promptTemplate: String = "What does following code means?\n $PROMPT_PLACEHOLDER"
     var outputTemplate: String = OUTPUT_PLACEHOLDER
+    var serverUrl: String = CHATGPT_API_URL
 
     override fun getState(): ChatGPTConfig {
         return this

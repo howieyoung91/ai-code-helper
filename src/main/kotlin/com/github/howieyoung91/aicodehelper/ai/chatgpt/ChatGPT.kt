@@ -14,25 +14,30 @@ import okhttp3.OkHttpClient
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+private val converterFactory = MoshiConverterFactory.create(
+    Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+)
+
 class ChatGPT private constructor() {
     companion object {
         val config: ChatGPTConfig by lazy { ChatGPTConfig.instance }
         var client: Lazy<ChatGPTClient> = lazy {
-            ChatGPTClient(config.apikey) {
-                client(
-                    OkHttpClient.Builder()
-                        .connectionPool(ConnectionPool())
-                        .callTimeout(30, TimeUnit.SECONDS)
-                        .readTimeout(30, TimeUnit.SECONDS)
-                        .build()
-                )
-                baseUrl("https://api.openai.com")
-                addConverterFactory(
-                    MoshiConverterFactory.create(
-                        Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-                    )
-                )
-            }
+            CustomChatGPTClient(config.apikey, config.serverUrl)
         }
     }
 }
+
+class CustomChatGPTClient(
+    apiKey: String = ChatGPT.config.apikey,
+    serverUrl: String = ChatGPT.config.serverUrl,
+) : ChatGPTClient(apiKey, {
+    client(
+        OkHttpClient.Builder()
+            .connectionPool(ConnectionPool())
+            .callTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+    )
+    baseUrl(serverUrl)
+    addConverterFactory(converterFactory)
+})

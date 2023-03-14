@@ -6,9 +6,9 @@
 package com.github.howieyoung91.aicodehelper.config
 
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.CustomChatGPTClient
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfigPanel
-import com.github.howieyoung91.chatgpt.client.ChatGPTClient
 import com.intellij.openapi.options.Configurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
@@ -38,6 +38,7 @@ class PluginConfigurable : Configurable {
                         or ((call { p.temperature.toDouble() } ?: chatgpt.temperature) != chatgpt.temperature)
                         or (p.promptTemplate != chatgpt.promptTemplate)
                         or (p.outputTemplate != chatgpt.outputTemplate)
+                        or (p.serverUrl != chatgpt.serverUrl)
                 )
     }
 
@@ -45,12 +46,14 @@ class PluginConfigurable : Configurable {
         val p = panel ?: return
         val chatgpt = ChatGPT.config
         chatgpt.apikey = p.apikey
-        ChatGPT.client = lazy { ChatGPTClient(chatgpt.apikey) }// change a client
+        ChatGPT.client = lazy { CustomChatGPTClient(chatgpt.apikey) } // change a client
         chatgpt.model = p.model
         chatgpt.maxToken = call { p.maxToken.toInt() } ?: 1024
         chatgpt.temperature = call { p.temperature.toDouble() } ?: 0.5
         chatgpt.promptTemplate = p.promptTemplate
         chatgpt.outputTemplate = p.outputTemplate
+        chatgpt.serverUrl = p.serverUrl
+        ChatGPT.client = lazy { CustomChatGPTClient(chatgpt.apikey, chatgpt.serverUrl) }// change a client
     }
 
     override fun reset() {
@@ -63,6 +66,7 @@ class PluginConfigurable : Configurable {
         p.temperature = chatgpt.temperature.toString()
         p.promptTemplate = chatgpt.promptTemplate
         p.outputTemplate = chatgpt.outputTemplate
+        p.serverUrl = chatgpt.serverUrl
     }
 
     override fun getPreferredFocusedComponent(): JComponent {

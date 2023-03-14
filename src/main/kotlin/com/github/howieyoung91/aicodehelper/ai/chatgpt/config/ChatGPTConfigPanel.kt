@@ -22,16 +22,18 @@ class ChatGPTConfigPanel {
     private val temperatureInput = OnlyFloatTextField()
     private val promptTemplateInput = JBTextArea()
     private val outputTemplateInput = JBTextArea()
+    private val serverUrlInput = JBTextField()
     private val modelsComboBox = ComboBox(COMPLETION_MODELS)
 
     init {
         panel = FormBuilder.createFormBuilder()
             .addLabeledComponent(JBLabel("API key:"), apikeyInput, 1, false)
+            .addLabeledComponent(JBLabel("Models:"), modelsComboBox, 1, false)
             .addLabeledComponent(JBLabel("Max token:"), maxTokenInput, 1, false)
             .addLabeledComponent(JBLabel("Temperature:"), temperatureInput, 1, false)
             .addLabeledComponent(JBLabel("Prompt template:"), promptTemplateInput, 1, false)
             .addLabeledComponent(JBLabel("Output template:"), outputTemplateInput, 1, false)
-            .addLabeledComponent(JBLabel("Models:"), modelsComboBox, 1, false)
+            .addLabeledComponent(JBLabel("Server:"), serverUrlInput, 1, false)
             .addComponentFillVertically(JPanel(), 0)
             .panel
     }
@@ -73,5 +75,11 @@ class ChatGPTConfigPanel {
         get() = outputTemplateInput.text
         set(newTemplate) {
             outputTemplateInput.text = newTemplate
+        }
+
+    var serverUrl: String
+        get() = serverUrlInput.text
+        set(url) {
+            serverUrlInput.text = url
         }
 }
