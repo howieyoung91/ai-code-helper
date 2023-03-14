@@ -5,9 +5,11 @@
 
 package com.github.howieyoung91.aicodehelper.generate
 
+import com.intellij.psi.PsiElement
+
 /**
  * @author Howie Young
  * @date 2023/03/09 18:15
  */
-interface CommentGenerator : CodeGenerator {
+interface CommentGenerator<T : PsiElement> : CodeGenerator<T> {
 }

@@ -5,6 +5,7 @@
 
 package com.github.howieyoung91.aicodehelper.action
 
+import com.github.howieyoung91.aicodehelper.generate.DefaultGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
 import com.github.howieyoung91.aicodehelper.util.Plugin
@@ -26,9 +27,11 @@ class CommentGenerate4MethodAction : VisibleAction<PsiMethod>() {
         if (Plugin.isAvailable(project)) {
             val factory = PsiElementFactory.getInstance(project) ?: return
             JavaDocCommentGenerator.generate(
-                Query { prompt(method.text) },
-                method,
-                factory
+                DefaultGeneratePoint(
+                    method,
+                    Query { prompt(method.text) },
+                    factory
+                )
             )
         }
     }
