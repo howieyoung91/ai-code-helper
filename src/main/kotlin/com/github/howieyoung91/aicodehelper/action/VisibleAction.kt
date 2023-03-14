@@ -19,7 +19,18 @@ import com.intellij.psi.util.PsiUtilCore
  */
 abstract class VisibleAction<T : PsiElement> : AnAction() {
     protected abstract val targetClass: Class<T>
-    protected val threadLocal = ThreadLocal<T>()
+    private val threadLocal = ThreadLocal<T>()
+    final override fun actionPerformed(e: AnActionEvent) {
+        val target = threadLocal.get() ?: return
+        threadLocal.remove()
+        val project = e.project ?: return
+        if (Plugin.isAvailable(project)) {
+            actionPerformed(target, e)
+        }
+    }
+
+    open fun actionPerformed(target: T, event: AnActionEvent) {}
+
     override fun update(e: AnActionEvent) {
         e.presentation.isVisible = false
         val target = getTarget(e, targetClass)

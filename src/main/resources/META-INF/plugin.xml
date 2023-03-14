@@ -41,5 +41,15 @@
                 text="Generate Comment for Method">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
+                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAction"
+                text="Generate Comment for Class">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+        <action id="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAndMethodsAction"
+                class="com.github.howieyoung91.aicodehelper.action.CommentGenerate4ClassAndMethodsAction"
+                text="Generate Comment for Class and Methods">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>

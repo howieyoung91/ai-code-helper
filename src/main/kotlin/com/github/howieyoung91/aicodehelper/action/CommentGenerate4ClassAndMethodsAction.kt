@@ -9,17 +9,16 @@ import com.github.howieyoung91.aicodehelper.generate.DefaultGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElementFactory
-import com.intellij.psi.PsiMethod
 
 /**
  * @author Howie Young
- * @date 2023/03/11 17:04
+ * @date 2023/03/14 15:30
  */
-class CommentGenerate4MethodAction : VisibleAction<PsiMethod>() {
-    override val targetClass: Class<PsiMethod> = PsiMethod::class.java
-
-    override fun actionPerformed(target: PsiMethod, event: AnActionEvent) {
+class CommentGenerate4ClassAndMethodsAction : VisibleAction<PsiClass>() {
+    override val targetClass = PsiClass::class.java
+    override fun actionPerformed(target: PsiClass, event: AnActionEvent) {
         val project = event.project!!
         val factory = PsiElementFactory.getInstance(project) ?: return
         JavaDocCommentGenerator.generate(
@@ -30,5 +29,15 @@ class CommentGenerate4MethodAction : VisibleAction<PsiMethod>() {
                 project
             )
         )
+        target.methods.filterNotNull().forEach { method ->
+            JavaDocCommentGenerator.generate(
+                DefaultGeneratePoint(
+                    Query { prompt(method.text) },
+                    method,
+                    factory,
+                    project
+                )
+            )
+        }
     }
 }

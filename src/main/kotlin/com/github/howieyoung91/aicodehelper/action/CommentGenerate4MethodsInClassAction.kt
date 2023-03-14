@@ -8,7 +8,6 @@ package com.github.howieyoung91.aicodehelper.action
 import com.github.howieyoung91.aicodehelper.generate.DefaultGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.Query
 import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
-import com.github.howieyoung91.aicodehelper.util.Plugin
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElementFactory
@@ -20,27 +19,18 @@ import com.intellij.psi.PsiElementFactory
 class CommentGenerate4MethodsInClassAction : VisibleAction<PsiClass>() {
     override val targetClass: Class<PsiClass> = PsiClass::class.java
 
-    override fun actionPerformed(e: AnActionEvent) {
-        val clazz = threadLocal.get() ?: return
-        threadLocal.remove()
-        val project = e.project ?: return
-        if (Plugin.isAvailable(project)) {
-            val factory = PsiElementFactory.getInstance(project) ?: return
-            generate4Classes(arrayOf(clazz), factory)
-        }
-    }
-
-    private fun generate4Classes(classes: Array<out PsiClass>, factory: PsiElementFactory) {
-        classes.forEach { clazz ->
-            clazz.methods.filterNotNull().forEach { method ->
-                JavaDocCommentGenerator.generate(
-                    DefaultGeneratePoint(
-                        method,
-                        Query { prompt(method.text) },
-                        factory
-                    )
+    override fun actionPerformed(target: PsiClass, event: AnActionEvent) {
+        val project = event.project!!
+        val factory = PsiElementFactory.getInstance(project) ?: return
+        target.methods.filterNotNull().forEach { method ->
+            JavaDocCommentGenerator.generate(
+                DefaultGeneratePoint(
+                    Query { prompt(method.text) },
+                    method,
+                    factory,
+                    project
                 )
-            }
+            )
         }
     }
 }

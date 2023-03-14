@@ -4,7 +4,7 @@
  */
 package com.github.howieyoung91.aicodehelper.generate
 
-import com.github.howieyoung91.aicodehelper.generate.java.FAIL_MESSAGE
+import com.github.howieyoung91.aicodehelper.config.FAIL_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.process.EscapeProcessor
 import com.github.howieyoung91.aicodehelper.generate.process.NoticeRequestingProcessor
 import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest

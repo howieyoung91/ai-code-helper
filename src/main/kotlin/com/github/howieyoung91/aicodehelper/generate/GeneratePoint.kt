@@ -5,6 +5,7 @@
 
 package com.github.howieyoung91.aicodehelper.generate
 
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementFactory
 
@@ -15,18 +16,22 @@ import com.intellij.psi.PsiElementFactory
  * @date 2023/03/14 09:59
  */
 interface GeneratePoint<T : PsiElement> {
-    val target: T
     val query: Query
+    val target: T
     val factory: PsiElementFactory
-    operator fun component1(): T = target
-    operator fun component2(): Query = query
-    operator fun component3(): PsiElementFactory = factory
+    val project: Project
+
+    operator fun component1() = query
+    operator fun component2() = target
+    operator fun component3() = factory
+    operator fun component4() = project
 }
 
 data class DefaultGeneratePoint<T : PsiElement>(
-    override val target: T,
     override val query: Query,
+    override val target: T,
     override val factory: PsiElementFactory,
+    override val project: Project,
 ) : GeneratePoint<T>
 
 class Query(text: String = "") {

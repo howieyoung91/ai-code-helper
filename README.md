@@ -4,8 +4,10 @@ This plugin allows you to **generate comment using ChatGPT in Java**.
 
 ## Feature
 
-1. Generate comment for method
-2. Generate comment for all methods in class
+- [x] Generate comment for method
+- [x] Generate comment for all methods in class
+- [x] Generate Comment for Class
+- [x] Generate Comment for Class and Methods
 
 ## Usage
 
@@ -15,11 +17,12 @@ First of all, you must fill your `API Key`.
 
 Then you can use following actions.
 
-1. `Generate` > `Generate Comment for Method`
-2. `Generate` > `Generate Comment for All Methods in Class`
+- [x] `Generate` > `Generate Comment for Method`
+- [x] `Generate` > `Generate Comment for All Methods in Class`
+- [x] `Generate` > `Generate Comment for Class`
+- [x] `Generate` > `Generate Comment for Class and Methods`
 
 ## TODO
 
-- [ ] Generate comment for class
 - [ ] Generate method using comment
-
+- [ ] Retry on failure

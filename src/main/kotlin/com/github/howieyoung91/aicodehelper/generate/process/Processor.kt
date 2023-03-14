@@ -8,9 +8,9 @@ package com.github.howieyoung91.aicodehelper.generate.process
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.config.OUTPUT_PLACEHOLDER
 import com.github.howieyoung91.aicodehelper.config.PROMPT_PLACEHOLDER
+import com.github.howieyoung91.aicodehelper.config.REQUESTING_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.GeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
-import com.github.howieyoung91.aicodehelper.generate.java.REQUESTING_MESSAGE
 import com.github.howieyoung91.aicodehelper.util.CommentWriter
 import com.intellij.psi.PsiElement
 
@@ -53,9 +53,8 @@ class NoticeRequestingProcessor<T : PsiElement> : Processor<T>, PriorityOrdered 
     override val order = Ordered.HIGHEST_PRECEDENCE
 
     override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> {
-        val (method, _, factory) = point
-        val commentElem = factory.createDocCommentFromText(REQUESTING_MESSAGE, method)
-        CommentWriter.writeJavadoc(method.project, method, commentElem)
+        val commentElem = point.factory.createDocCommentFromText(REQUESTING_MESSAGE, point.target)
+        CommentWriter.writeJavadoc(point.project, point.target, commentElem)
         return point
     }
 }
