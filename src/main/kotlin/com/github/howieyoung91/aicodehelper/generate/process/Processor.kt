@@ -20,7 +20,7 @@ import com.intellij.psi.PsiElement
  */
 interface Processor<T : PsiElement> : Ordered {
     fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> = point
-    fun afterResponse(response: GenerateResult) = response
+    fun afterResponse(point: GeneratePoint<T>, response: GenerateResult) = response
 }
 
 /**
@@ -38,7 +38,7 @@ class EscapeProcessor<T : PsiElement> : Processor<T> {
         return point
     }
 
-    override fun afterResponse(response: GenerateResult): GenerateResult {
+    override fun afterResponse(point: GeneratePoint<T>, response: GenerateResult): GenerateResult {
         response.content = ChatGPT.config.outputTemplate.replace(OUTPUT_PLACEHOLDER, response.content)
         return response
     }

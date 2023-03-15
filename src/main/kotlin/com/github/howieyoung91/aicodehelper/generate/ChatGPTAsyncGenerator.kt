@@ -7,7 +7,6 @@ package com.github.howieyoung91.aicodehelper.generate
 import com.github.howieyoung91.aicodehelper.config.FAIL_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.process.EscapeProcessor
 import com.github.howieyoung91.aicodehelper.generate.process.NoticeRequestingProcessor
-import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
 import com.intellij.psi.PsiElement
 import retrofit2.Response
@@ -16,35 +15,27 @@ import retrofit2.Response
  * @author Howie Young
  * @date 2023/03/14 13:47
  */
-abstract class ChatGPTAsyncGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
+abstract class ChatGPTAsyncGenerator<T : PsiElement> : RetryGenerator<T>() {
     protected val processors = listOf(NoticeRequestingProcessor<T>(), EscapeProcessor())
-    override fun beforeRequest(point: GeneratePoint<T>): CompletionRequest {
+    protected val failMessage: String = FAIL_MESSAGE
+
+    /**
+     * apply processors before request
+     */
+    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> {
         processors.forEach { it.beforeRequest(point) }
-        return createRequest(point)
+        return point
     }
 
+    /**
+     * generate comment
+     */
     override fun onResponse(point: GeneratePoint<T>, response: Response<CompletionResponse>): GenerateResult {
-        val result = createGenerateResult(response)
-        // TODO 处理 ChatGPT 响应的非法字符
-        processors.forEach { it.afterResponse(result) }
-        return result
-    }
-
-    override fun onFailure(point: GeneratePoint<T>, t: Throwable): GenerateResult {
-        val comment = if (t.message != null) "[AI Code Helper] ${t.message}" else FAIL_MESSAGE
-        return GenerateResult(comment, true)
-    }
-
-    override fun onFinal(point: GeneratePoint<T>, result: GenerateResult) {
-
-    }
-
-    private fun createGenerateResult(response: Response<CompletionResponse>): GenerateResult {
         var comment = ""
         if (response.code() != 200) {
             val errorBody = response.errorBody()
             if (errorBody != null) {
-                comment = "[AI Code Helper] ${errorBody.string()}"
+                comment = "[AI Code Helper] $errorBody"
             }
         }
         else {
@@ -54,5 +45,19 @@ abstract class ChatGPTAsyncGenerator<T : PsiElement> : AbstractAsyncGenerator<T>
             }
         }
         return GenerateResult(comment, false)
+    }
+
+    /**
+     * apply processors after response
+     */
+    override fun afterResponse(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+        var r = result
+        processors.forEach { r = it.afterResponse(point, result) } // TODO 处理 ChatGPT 响应的非法字符
+        return r
+    }
+
+    override fun onFailure(point: GeneratePoint<T>, t: Throwable): GenerateResult {
+        val comment = if (t.message != null) "[AI Code Helper] Fail to generate\nCause: ${t.message}" else failMessage
+        return GenerateResult(comment, true)
     }
 }

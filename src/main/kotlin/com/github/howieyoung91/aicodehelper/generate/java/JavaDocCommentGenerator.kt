@@ -7,7 +7,6 @@ package com.github.howieyoung91.aicodehelper.generate.java
 
 import com.github.howieyoung91.aicodehelper.ai.AiBased
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
-import com.github.howieyoung91.aicodehelper.config.FAIL_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.ChatGPTAsyncGenerator
 import com.github.howieyoung91.aicodehelper.generate.GeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
@@ -30,7 +29,7 @@ object JavaDocCommentGenerator : ChatGPTAsyncGenerator<PsiElement>(), AiBased {
     }
 
     override fun onFinal(point: GeneratePoint<PsiElement>, result: GenerateResult) {
-        val content: String = result.content.ifEmpty { FAIL_MESSAGE }
+        val content: String = result.content.ifEmpty { failMessage }
         val (_, target, factory, project) = point
 
         // do write
@@ -41,7 +40,7 @@ object JavaDocCommentGenerator : ChatGPTAsyncGenerator<PsiElement>(), AiBased {
             }
             catch (e: Throwable) {
                 e.printStackTrace()
-                factory.createDocCommentFromText("/** $FAIL_MESSAGE */", target)
+                factory.createDocCommentFromText("/** $failMessage */", target)
             }
         }
         CommentWriter.writeJavadoc(project, target, commentElem!!)

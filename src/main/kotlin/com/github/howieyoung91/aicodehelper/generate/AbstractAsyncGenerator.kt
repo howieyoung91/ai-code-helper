@@ -17,26 +17,60 @@ import retrofit2.Response
  * @author Howie Young
  * @date 2023/03/14 14:17
  */
-abstract class AbstractAsyncGenerator<T : PsiElement> : CodeGenerator<T> {
-    override fun generate(point: GeneratePoint<T>) {
-        val request = beforeRequest(point)
+abstract class AbstractAsyncGenerator<T : PsiElement> : AdvancedGenerator<T>(), CodeGenerator<T> {
+    final override fun generate(point: GeneratePoint<T>) {
+        val point = beforeRequest(point)
+        val request = createRequest(point)
+        doRequest(request, point)
+    }
+
+    protected fun doRequest(request: CompletionRequest, point: GeneratePoint<T>) {
         // 目前先使用到 ChatGPT
         ChatGPT.client.value.complete(request, object : Callback<CompletionResponse> {
             override fun onResponse(call: Call<CompletionResponse>, response: Response<CompletionResponse>) {
-                val result = onResponse(point, response)
+                val resolvedResponse = beforeResponse(point, call, request, response)
+                var result = onResponse(point, resolvedResponse)
+                result = afterResponse(point, result)
                 onFinal(point, result)
             }
 
             override fun onFailure(call: Call<CompletionResponse>, t: Throwable) {
+                beforeFailure(point, call, request, t)
                 val result = onFailure(point, t)
                 onFinal(point, result)
             }
         })
     }
 
-    abstract fun beforeRequest(point: GeneratePoint<T>): CompletionRequest
-    abstract fun createRequest(point: GeneratePoint<T>): CompletionRequest
-    abstract fun onResponse(point: GeneratePoint<T>, response: Response<CompletionResponse>): GenerateResult
-    abstract fun onFailure(point: GeneratePoint<T>, t: Throwable): GenerateResult
-    abstract fun onFinal(point: GeneratePoint<T>, result: GenerateResult)
+    protected abstract fun createRequest(point: GeneratePoint<T>): CompletionRequest
+
+    protected abstract fun onResponse(point: GeneratePoint<T>, response: Response<CompletionResponse>): GenerateResult
+
+    protected abstract fun onFailure(point: GeneratePoint<T>, t: Throwable): GenerateResult
+
+    protected abstract fun onFinal(point: GeneratePoint<T>, result: GenerateResult)
+}
+
+abstract class AdvancedGenerator<T : PsiElement> : CodeGenerator<T> {
+    protected abstract fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>
+
+    protected open fun beforeResponse(
+        point: GeneratePoint<T>,
+        call: Call<CompletionResponse>,
+        request: CompletionRequest,
+        response: Response<CompletionResponse>,
+    ) = response
+
+    protected open fun afterResponse(point: GeneratePoint<T>, result: GenerateResult): GenerateResult = result
+
+    protected open fun beforeFailure(
+        point: GeneratePoint<T>,
+        call: Call<CompletionResponse>,
+        request: CompletionRequest,
+        t: Throwable,
+    ) {
+
+    }
+
+    protected open fun afterFailure(point: GeneratePoint<T>, result: GenerateResult): GenerateResult = result
 }
