@@ -13,4 +13,3 @@ const val PROMPT_PLACEHOLDER = "{{PROMPT}}"
 const val OUTPUT_PLACEHOLDER = "{{OUTPUT}}"
 
 const val FAIL_MESSAGE = "[AI Code Helper] Fail to generate."
-const val REQUESTING_MESSAGE = "/** [AI Code Helper] requesting, just a moment. */"

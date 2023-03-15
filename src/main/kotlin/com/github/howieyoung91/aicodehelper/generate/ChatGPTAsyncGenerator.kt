@@ -6,7 +6,8 @@ package com.github.howieyoung91.aicodehelper.generate
 
 import com.github.howieyoung91.aicodehelper.config.FAIL_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.process.EscapeProcessor
-import com.github.howieyoung91.aicodehelper.generate.process.NoticeRequestingProcessor
+import com.github.howieyoung91.aicodehelper.generate.process.FailureProcessor
+import com.github.howieyoung91.aicodehelper.generate.process.RequestLimitedProcessor
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
 import com.intellij.psi.PsiElement
 import retrofit2.Response
@@ -16,15 +17,16 @@ import retrofit2.Response
  * @date 2023/03/14 13:47
  */
 abstract class ChatGPTAsyncGenerator<T : PsiElement> : RetryGenerator<T>() {
-    protected val processors = listOf(NoticeRequestingProcessor<T>(), EscapeProcessor())
+    protected val processors = listOf(RequestLimitedProcessor<T>(), EscapeProcessor())
     protected val failMessage: String = FAIL_MESSAGE
 
     /**
      * apply processors before request
      */
-    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> {
-        processors.forEach { it.beforeRequest(point) }
-        return point
+    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>? {
+        var p: GeneratePoint<T>? = point
+        processors.forEach { p = it.beforeRequest(point) ?: return null }
+        return p
     }
 
     /**
@@ -60,4 +62,17 @@ abstract class ChatGPTAsyncGenerator<T : PsiElement> : RetryGenerator<T>() {
         val comment = if (t.message != null) "[AI Code Helper] Fail to generate\nCause: ${t.message}" else failMessage
         return GenerateResult(comment, true)
     }
+
+    override fun afterFailure(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+        var r = result
+        processors.forEach {
+            if (isA<FailureProcessor<T>>(it)) {
+                val p = it as FailureProcessor<T>
+                r = p.afterFailure(point, result)
+            }
+        }
+        return r
+    }
 }
+
+inline fun <reified T> isA(value: Any) = value is T

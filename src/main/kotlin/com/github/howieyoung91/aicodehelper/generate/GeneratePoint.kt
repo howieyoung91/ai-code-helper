@@ -25,6 +25,10 @@ interface GeneratePoint<T : PsiElement> {
     operator fun component2() = target
     operator fun component3() = factory
     operator fun component4() = project
+
+    fun key(): String {
+        return target.toString()
+    }
 }
 
 data class DefaultGeneratePoint<T : PsiElement>(

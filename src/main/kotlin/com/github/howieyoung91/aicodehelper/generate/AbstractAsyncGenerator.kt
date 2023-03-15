@@ -19,8 +19,8 @@ import retrofit2.Response
  */
 abstract class AbstractAsyncGenerator<T : PsiElement> : AdvancedGenerator<T>(), CodeGenerator<T> {
     final override fun generate(point: GeneratePoint<T>) {
-        val point = beforeRequest(point)
-        val request = createRequest(point)
+        val point = beforeRequest(point) ?: return
+        val request = createRequest(point) ?: return
         doRequest(request, point)
     }
 
@@ -36,13 +36,14 @@ abstract class AbstractAsyncGenerator<T : PsiElement> : AdvancedGenerator<T>(), 
 
             override fun onFailure(call: Call<CompletionResponse>, t: Throwable) {
                 beforeFailure(point, call, request, t)
-                val result = onFailure(point, t)
+                var result = onFailure(point, t)
+                result = afterFailure(point, result)
                 onFinal(point, result)
             }
         })
     }
 
-    protected abstract fun createRequest(point: GeneratePoint<T>): CompletionRequest
+    protected abstract fun createRequest(point: GeneratePoint<T>): CompletionRequest?
 
     protected abstract fun onResponse(point: GeneratePoint<T>, response: Response<CompletionResponse>): GenerateResult
 
@@ -52,7 +53,7 @@ abstract class AbstractAsyncGenerator<T : PsiElement> : AdvancedGenerator<T>(), 
 }
 
 abstract class AdvancedGenerator<T : PsiElement> : CodeGenerator<T> {
-    protected abstract fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>
+    protected abstract fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>?
 
     protected open fun beforeResponse(
         point: GeneratePoint<T>,
