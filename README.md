@@ -2,8 +2,9 @@
 
 This plugin allows you to **generate comment using ChatGPT in Java**.
 
-## Feature
+![demo](./doc/assets/img/demo.gif)
 
+## Feature
 - [x] Generate comment for method
 - [x] Generate comment for all methods in class
 - [x] Generate comment for Class
