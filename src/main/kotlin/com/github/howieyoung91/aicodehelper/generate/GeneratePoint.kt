@@ -20,15 +20,11 @@ interface GeneratePoint<T : PsiElement> {
     val target: T
     val factory: PsiElementFactory
     val project: Project
-
+    val key: String
     operator fun component1() = query
     operator fun component2() = target
     operator fun component3() = factory
     operator fun component4() = project
-
-    fun key(): String {
-        return target.toString()
-    }
 }
 
 data class DefaultGeneratePoint<T : PsiElement>(
@@ -36,7 +32,9 @@ data class DefaultGeneratePoint<T : PsiElement>(
     override val target: T,
     override val factory: PsiElementFactory,
     override val project: Project,
-) : GeneratePoint<T>
+) : GeneratePoint<T> {
+    override val key = target.toString()
+}
 
 class Query(text: String = "") {
     var prompt: String = text

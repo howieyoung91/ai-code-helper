@@ -8,6 +8,7 @@ import com.github.howieyoung91.aicodehelper.config.FAIL_MESSAGE
 import com.github.howieyoung91.aicodehelper.generate.process.EscapeProcessor
 import com.github.howieyoung91.aicodehelper.generate.process.FailureProcessor
 import com.github.howieyoung91.aicodehelper.generate.process.RequestLimitedProcessor
+import com.github.howieyoung91.aicodehelper.generate.process.WrapCommentProcessor
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
 import com.intellij.psi.PsiElement
 import retrofit2.Response
@@ -17,7 +18,7 @@ import retrofit2.Response
  * @date 2023/03/14 13:47
  */
 abstract class ChatGPTAsyncGenerator<T : PsiElement> : RetryGenerator<T>() {
-    protected val processors = listOf(RequestLimitedProcessor<T>(), EscapeProcessor())
+    protected val processors = listOf(RequestLimitedProcessor<T>(), EscapeProcessor(), WrapCommentProcessor())
     protected val failMessage: String = FAIL_MESSAGE
 
     /**
