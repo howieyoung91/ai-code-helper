@@ -9,6 +9,7 @@ import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.CustomChatGPTClient
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfigPanel
+import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
 import com.intellij.openapi.options.Configurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent
@@ -36,6 +37,7 @@ class PluginConfigurable : Configurable {
                         or (p.model != chatgpt.model)
                         or ((call { p.maxToken.toInt() } ?: chatgpt.maxToken) != chatgpt.maxToken)
                         or ((call { p.temperature.toDouble() } ?: chatgpt.temperature) != chatgpt.temperature)
+                        or ((call { p.retryCount.toInt() } ?: chatgpt.retryCount) != chatgpt.retryCount)
                         or (p.promptTemplate != chatgpt.promptTemplate)
                         or (p.outputTemplate != chatgpt.outputTemplate)
                         or (p.serverUrl != chatgpt.serverUrl)
@@ -53,7 +55,9 @@ class PluginConfigurable : Configurable {
         chatgpt.promptTemplate = p.promptTemplate
         chatgpt.outputTemplate = p.outputTemplate
         chatgpt.serverUrl = p.serverUrl
-        ChatGPT.client = lazy { CustomChatGPTClient(chatgpt.apikey, chatgpt.serverUrl) }// change a client
+        chatgpt.retryCount = call { p.retryCount.toInt() } ?: 3
+        JavaDocCommentGenerator.maxRetryCount(chatgpt.retryCount)
+        ChatGPT.client = lazy { CustomChatGPTClient(chatgpt.apikey, chatgpt.serverUrl) } // change a client
     }
 
     override fun reset() {
@@ -64,6 +68,7 @@ class PluginConfigurable : Configurable {
         chatgpt.model = p.model // 写回 model，确保 model 一定合法
         p.maxToken = chatgpt.maxToken.toString()
         p.temperature = chatgpt.temperature.toString()
+        p.retryCount = chatgpt.retryCount.toString()
         p.promptTemplate = chatgpt.promptTemplate
         p.outputTemplate = chatgpt.outputTemplate
         p.serverUrl = chatgpt.serverUrl

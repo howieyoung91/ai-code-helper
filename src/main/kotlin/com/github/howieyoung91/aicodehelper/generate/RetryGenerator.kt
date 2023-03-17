@@ -14,10 +14,17 @@ import okio.BufferedSource
 import retrofit2.Call
 import retrofit2.Response
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
     private val cache = ConcurrentHashMap<GeneratePoint<T>, Int>()
-    private val maxRetryCount = 3
+    private val maxRetryCount: AtomicInteger = AtomicInteger(3)
+
+    fun maxRetryCount(count: Int) {
+        this.maxRetryCount.set(count)
+    }
+
+    fun maxRetryCount() = maxRetryCount.get()
 
     override fun beforeResponse(
         point: GeneratePoint<T>,
@@ -39,7 +46,7 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
         }
 
         var count = cache.computeIfAbsent(point) { 0 }
-        if (++count > maxRetryCount) {
+        if (++count > maxRetryCount.get()) {
             cache.remove(point)
             return response
         }
@@ -51,13 +58,13 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
             Response.error(
                 ProxyResponseBody(
                     errorBody,
-                    "Fail to generate. Retrying $count/$maxRetryCount\nCause: ${errorBody.string()}"
+                    "Fail to generate. Retrying $count/${maxRetryCount.get()}\nCause: ${errorBody.string()}"
                 ), response.raw()
             )
         }
         else {
             val body = response.body()!!
-            body.choices[0].text = "Fail to generate. Retrying $count/$maxRetryCount"
+            body.choices[0].text = "Fail to generate. Retrying $count/${maxRetryCount.get()}"
             response
         }
     }

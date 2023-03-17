@@ -43,6 +43,7 @@ class ChatGPTConfig : PersistentStateComponent<ChatGPTConfig> {
     var promptTemplate: String = "What does following code means?\n $PROMPT_PLACEHOLDER"
     var outputTemplate: String = OUTPUT_PLACEHOLDER
     var serverUrl: String = CHATGPT_API_URL
+    var retryCount: Int = 3
 
     override fun getState(): ChatGPTConfig {
         return this
