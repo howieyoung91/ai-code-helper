@@ -3,11 +3,8 @@
  * Licensed under the GPL version 3
  */
 
-package com.github.howieyoung91.aicodehelper.generate.support
+package com.github.howieyoung91.aicodehelper.generate
 
-import com.github.howieyoung91.aicodehelper.generate.GenerateResult
-import com.github.howieyoung91.aicodehelper.generate.Generator
-import com.github.howieyoung91.aicodehelper.generate.Point
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,7 +22,7 @@ abstract class AsyncGenerator<T : Point<*>, REQ, RESP> : AdvancedGenerator<T, RE
 
     protected abstract fun createRequest(point: T): REQ?
 
-    abstract fun doRequest(request: REQ, point: T)
+    protected abstract fun doRequest(request: REQ, point: T)
 
     protected fun defaultCallback(
         point: T,

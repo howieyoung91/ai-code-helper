@@ -8,10 +8,10 @@ package com.github.howieyoung91.aicodehelper.generate.process
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.config.OUTPUT_PLACEHOLDER
 import com.github.howieyoung91.aicodehelper.config.PROMPT_PLACEHOLDER
-import com.github.howieyoung91.aicodehelper.generate.ElementGeneratePoint
+import com.github.howieyoung91.aicodehelper.generate.ElementPoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
 import com.github.howieyoung91.aicodehelper.generate.Point
-import com.github.howieyoung91.aicodehelper.util.CommentWriter
+import com.github.howieyoung91.aicodehelper.util.PSI
 import com.github.howieyoung91.aicodehelper.util.StringUtils
 import java.util.concurrent.ConcurrentHashMap
 
@@ -52,16 +52,16 @@ class EscapeProcessor<T : Point<*>> : Processor<T> {
  */
 class NoticeRequestingProcessor<T : Point<*>> : Processor<T>, PriorityOrdered {
     companion object {
-        private const val REQUESTING_MESSAGE = "/** [AI Code Helper] Requesting, just a moment. */"
+        const val REQUESTING_MESSAGE = "[AI Code Helper] Requesting, just a moment."
     }
 
     override val order = Ordered.HIGHEST_PRECEDENCE
 
     override fun beforeRequest(point: T): T {
-        if (point is ElementGeneratePoint<*>) {
+        if (point is ElementPoint<*>) {
             val target = point.target
-            val commentElem = point.factory.createDocCommentFromText(REQUESTING_MESSAGE, target)
-            CommentWriter.writeJavadoc(point.project, target, commentElem)
+            val commentElem = point.factory.createDocCommentFromText("/** $REQUESTING_MESSAGE */", target)
+            PSI.writeJavadoc(point.project, target, commentElem)
         }
         return point
     }
@@ -81,14 +81,14 @@ class RequestLimitedProcessor<T : Point<*>>
     private val cache = ConcurrentHashMap<String, Int>()
 
     override fun beforeRequest(point: T): T? {
-        if (point !is ElementGeneratePoint<*>) {
+        if (point !is ElementPoint<*>) {
             return processor.beforeRequest(point)
         }
         val key = point.key
         val target = point.target
         if (cache.containsKey(key)) {
             val commentElem = point.factory.createDocCommentFromText(LIMITED_MESSAGE, target)
-            CommentWriter.writeJavadoc(point.project, target, commentElem)
+            PSI.writeJavadoc(point.project, target, commentElem)
             return null
         }
         cache[key] = 0

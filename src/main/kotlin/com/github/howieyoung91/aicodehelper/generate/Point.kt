@@ -5,6 +5,7 @@
 
 package com.github.howieyoung91.aicodehelper.generate
 
+import com.intellij.openapi.editor.SelectionModel
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementFactory
@@ -21,7 +22,7 @@ interface Point<T> {
  * @author Howie Young
  * @date 2023/03/14 09:59
  */
-interface ElementGeneratePoint<T : PsiElement> : Point<T> {
+interface ElementPoint<T : PsiElement> : Point<T> {
     val factory: PsiElementFactory
     val project: Project
     operator fun component1() = query
@@ -30,13 +31,11 @@ interface ElementGeneratePoint<T : PsiElement> : Point<T> {
     operator fun component4() = project
 }
 
-data class StringGeneratePoint(
+data class SelectionPoint(
     override val query: Query,
-    override val target: String,
-    val start: Int,
-    val end: Int,
-) : Point<String> {
-    override val key: String = target
+    override val target: SelectionModel,
+) : Point<SelectionModel> {
+    override val key: String = target.selectedText!!
 }
 
 data class DefaultGeneratePoint<T : PsiElement>(
@@ -44,6 +43,6 @@ data class DefaultGeneratePoint<T : PsiElement>(
     override val target: T,
     override val factory: PsiElementFactory,
     override val project: Project,
-) : ElementGeneratePoint<T> {
+) : ElementPoint<T> {
     override val key = target.toString()
 }

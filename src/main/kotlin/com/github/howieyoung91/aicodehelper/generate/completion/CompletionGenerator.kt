@@ -3,9 +3,11 @@
  * Licensed under the GPL version 3
  */
 
-package com.github.howieyoung91.aicodehelper.generate.support
+package com.github.howieyoung91.aicodehelper.generate.completion
 
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
+import com.github.howieyoung91.aicodehelper.generate.ChatGPTAsyncGenerator
+import com.github.howieyoung91.aicodehelper.generate.GenerateResult
 import com.github.howieyoung91.aicodehelper.generate.Point
 import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
@@ -17,7 +19,7 @@ import retrofit2.Response
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
-abstract class CompletionGenerator<T : Point<*>> : AsyncGenerator<T, CompletionRequest, CompletionResponse>() {
+abstract class CompletionGenerator<T : Point<*>> : ChatGPTAsyncGenerator<T, CompletionRequest, CompletionResponse>() {
     private val cache = ConcurrentHashMap<String, Int>()
     private val maxRetryCount: AtomicInteger = AtomicInteger(3)
     override fun doRequest(request: CompletionRequest, point: T) {
@@ -84,9 +86,24 @@ abstract class CompletionGenerator<T : Point<*>> : AsyncGenerator<T, CompletionR
         response: Response<CompletionResponse>,
         s: String,
         errorBody: ResponseBody,
-    ): Response<CompletionResponse> = Response.error(
-        ProxyResponseBody(errorBody, s), response.raw()
-    )
+    ): Response<CompletionResponse> = Response.error(ProxyResponseBody(errorBody, s), response.raw())
+
+    override fun onResponse(point: T, response: Response<CompletionResponse>): GenerateResult {
+        var comment = ""
+        if (response.code() != 200) {
+            val errorBody = response.errorBody()
+            if (errorBody != null) {
+                comment = "[AI Code Helper] $errorBody"
+            }
+        }
+        else {
+            val body = response.body()
+            if (body != null && body.choices.isNotEmpty()) {
+                comment = body.choices[0].text
+            }
+        }
+        return GenerateResult(comment, false)
+    }
 }
 
 private class ProxyResponseBody(private val actual: ResponseBody, private val string: String = "") : ResponseBody() {

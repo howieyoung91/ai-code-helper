@@ -51,5 +51,13 @@
                 text="Generate Comment for Class and Methods">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+        <action id="com.github.howieyoung91.aicodehelper.action.OptimizedCodeAction"
+                class="com.github.howieyoung91.aicodehelper.action.OptimizedCodeAction" text="Optimized Code">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+        <!--        <action id="com.github.howieyoung91.aicodehelper.action.PolishCommentAction"-->
+        <!--                class="com.github.howieyoung91.aicodehelper.action.PolishCommentAction" text="Polish Comment">-->
+        <!--            <add-to-group group-id="GenerateGroup" anchor="last"/>-->
+        <!--        </action>-->
     </actions>
 </idea-plugin>
