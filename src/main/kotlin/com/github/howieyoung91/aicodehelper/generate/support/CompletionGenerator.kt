@@ -3,11 +3,12 @@
  * Licensed under the GPL version 3
  */
 
-package com.github.howieyoung91.aicodehelper.generate
+package com.github.howieyoung91.aicodehelper.generate.support
 
+import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
+import com.github.howieyoung91.aicodehelper.generate.Point
 import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest
 import com.github.howieyoung91.chatgpt.client.completion.CompletionResponse
-import com.intellij.psi.PsiElement
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import okio.BufferedSource
@@ -16,9 +17,12 @@ import retrofit2.Response
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
-abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
-    private val cache = ConcurrentHashMap<GeneratePoint<T>, Int>()
+abstract class CompletionGenerator<T : Point<*>> : AsyncGenerator<T, CompletionRequest, CompletionResponse>() {
+    private val cache = ConcurrentHashMap<String, Int>()
     private val maxRetryCount: AtomicInteger = AtomicInteger(3)
+    override fun doRequest(request: CompletionRequest, point: T) {
+        ChatGPT.client.value.complete(request, defaultCallback(point, request))
+    }
 
     fun maxRetryCount(count: Int) {
         this.maxRetryCount.set(count)
@@ -27,7 +31,7 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
     fun maxRetryCount() = maxRetryCount.get()
 
     override fun beforeResponse(
-        point: GeneratePoint<T>,
+        point: T,
         call: Call<CompletionResponse>,
         request: CompletionRequest,
         response: Response<CompletionResponse>,
@@ -39,15 +43,15 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
             if (body != null) {
                 val choices = body.choices
                 if (choices.isNotEmpty() && choices[0].text.isNotEmpty()) {
-                    cache.remove(point)
+                    cache.remove(point.key)
                     return response
                 }
             }
         }
 
-        var count = cache.computeIfAbsent(point) { 0 }
+        var count = cache.computeIfAbsent(point.key) { 0 }
         if (++count > maxRetryCount.get()) {
-            cache.remove(point)
+            cache.remove(point.key)
             if (code != 200) {
                 val errorBody = response.errorBody()!!
                 return proxy(
@@ -58,7 +62,7 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
             }
             return response
         }
-        cache[point] = count
+        cache[point.key] = count
         doRequest(request, point)
 
         return if (code != 200) {

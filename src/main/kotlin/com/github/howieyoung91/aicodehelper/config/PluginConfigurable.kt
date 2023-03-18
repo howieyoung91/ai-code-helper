@@ -9,7 +9,7 @@ import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.CustomChatGPTClient
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfig
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.config.ChatGPTConfigPanel
-import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
+import com.github.howieyoung91.aicodehelper.generate.completion.JavaDocCommentGenerator
 import com.intellij.openapi.options.Configurable
 import org.jetbrains.annotations.Nls
 import javax.swing.JComponent

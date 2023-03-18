@@ -7,7 +7,7 @@ package com.github.howieyoung91.aicodehelper.action
 
 import com.github.howieyoung91.aicodehelper.generate.DefaultGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.Query
-import com.github.howieyoung91.aicodehelper.generate.java.JavaDocCommentGenerator
+import com.github.howieyoung91.aicodehelper.generate.completion.JavaDocCommentGenerator
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiMethod

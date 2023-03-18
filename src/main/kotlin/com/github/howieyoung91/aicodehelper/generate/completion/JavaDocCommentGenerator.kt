@@ -3,13 +3,13 @@
  * Licensed under the GPL version 3
  */
 
-package com.github.howieyoung91.aicodehelper.generate.java
+package com.github.howieyoung91.aicodehelper.generate.completion
 
 import com.github.howieyoung91.aicodehelper.ai.AiBased
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
-import com.github.howieyoung91.aicodehelper.generate.ChatGPTAsyncGenerator
-import com.github.howieyoung91.aicodehelper.generate.GeneratePoint
+import com.github.howieyoung91.aicodehelper.generate.ElementGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
+import com.github.howieyoung91.aicodehelper.generate.support.ChatGPTAsyncGenerator
 import com.github.howieyoung91.aicodehelper.util.CommentWriter
 import com.github.howieyoung91.chatgpt.client.completion.CompletionRequest
 import com.intellij.openapi.application.ReadAction
@@ -20,15 +20,15 @@ import com.intellij.psi.javadoc.PsiDocComment
  * @author Howie Young
  * @date 2023/03/09 18:16
  */
-object JavaDocCommentGenerator : ChatGPTAsyncGenerator<PsiElement>(), AiBased {
-    override fun createRequest(point: GeneratePoint<PsiElement>): CompletionRequest {
+object JavaDocCommentGenerator : ChatGPTAsyncGenerator<ElementGeneratePoint<PsiElement>>(), AiBased {
+    override fun createRequest(point: ElementGeneratePoint<PsiElement>): CompletionRequest {
         val request = CompletionRequest(ChatGPT.config.model, point.query.prompt)
         request.maxTokens = ChatGPT.config.maxToken
         request.temperature = ChatGPT.config.temperature
         return request
     }
 
-    override fun onFinal(point: GeneratePoint<PsiElement>, result: GenerateResult) {
+    override fun onFinal(point: ElementGeneratePoint<PsiElement>, result: GenerateResult) {
         val content: String = result.content.ifEmpty { failMessage }
         val (_, target, factory, project) = point
 
@@ -45,4 +45,5 @@ object JavaDocCommentGenerator : ChatGPTAsyncGenerator<PsiElement>(), AiBased {
         }
         CommentWriter.writeJavadoc(project, target, commentElem!!)
     }
+
 }

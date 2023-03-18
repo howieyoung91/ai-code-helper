@@ -4,17 +4,16 @@
  */
 package com.github.howieyoung91.aicodehelper.generate.process
 
-import com.github.howieyoung91.aicodehelper.generate.GeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
-import com.intellij.psi.PsiElement
+import com.github.howieyoung91.aicodehelper.generate.Point
 
 /**
  * @author Howie Young
  * @date 2023/03/15 22:28
  */
-interface FailureProcessor<T : PsiElement> {
-    fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>? = point
-    fun afterFailure(point: GeneratePoint<T>, result: GenerateResult) = result
+interface FailureProcessor<T : Point<*>> {
+    fun beforeRequest(point: T): T? = point
+    fun afterFailure(point: T, result: GenerateResult) = result
 }
 
 

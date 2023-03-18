@@ -8,20 +8,20 @@ package com.github.howieyoung91.aicodehelper.generate.process
 import com.github.howieyoung91.aicodehelper.ai.chatgpt.ChatGPT
 import com.github.howieyoung91.aicodehelper.config.OUTPUT_PLACEHOLDER
 import com.github.howieyoung91.aicodehelper.config.PROMPT_PLACEHOLDER
-import com.github.howieyoung91.aicodehelper.generate.GeneratePoint
+import com.github.howieyoung91.aicodehelper.generate.ElementGeneratePoint
 import com.github.howieyoung91.aicodehelper.generate.GenerateResult
+import com.github.howieyoung91.aicodehelper.generate.Point
 import com.github.howieyoung91.aicodehelper.util.CommentWriter
 import com.github.howieyoung91.aicodehelper.util.StringUtils
-import com.intellij.psi.PsiElement
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * @author Howie Young
  * @date 2023/03/14 09:58
  */
-interface Processor<T : PsiElement> : Ordered {
-    fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>? = point
-    fun afterResponse(point: GeneratePoint<T>, result: GenerateResult) = result
+interface Processor<T : Point<*>> : Ordered {
+    fun beforeRequest(point: T): T? = point
+    fun afterResponse(point: T, result: GenerateResult) = result
 }
 
 /**
@@ -29,17 +29,17 @@ interface Processor<T : PsiElement> : Ordered {
 
  * @author Howie Young
  */
-class EscapeProcessor<T : PsiElement> : Processor<T> {
+class EscapeProcessor<T : Point<*>> : Processor<T> {
     override val order = Ordered.HIGHEST_PRECEDENCE
 
-    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> {
+    override fun beforeRequest(point: T): T {
         val query = point.query
         query.prompt = ChatGPT.config.promptTemplate.replace(PROMPT_PLACEHOLDER, query.prompt)
         query.prompt = query.prompt.replace("\n", "\\n").replace("\"", "\\\"")
         return point
     }
 
-    override fun afterResponse(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+    override fun afterResponse(point: T, result: GenerateResult): GenerateResult {
         result.content = ChatGPT.config.outputTemplate.replace(OUTPUT_PLACEHOLDER, result.content)
         return result
     }
@@ -50,16 +50,19 @@ class EscapeProcessor<T : PsiElement> : Processor<T> {
 
  * @author Howie Young
  */
-class NoticeRequestingProcessor<T : PsiElement> : Processor<T>, PriorityOrdered {
+class NoticeRequestingProcessor<T : Point<*>> : Processor<T>, PriorityOrdered {
     companion object {
         private const val REQUESTING_MESSAGE = "/** [AI Code Helper] Requesting, just a moment. */"
     }
 
     override val order = Ordered.HIGHEST_PRECEDENCE
 
-    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T> {
-        val commentElem = point.factory.createDocCommentFromText(REQUESTING_MESSAGE, point.target)
-        CommentWriter.writeJavadoc(point.project, point.target, commentElem)
+    override fun beforeRequest(point: T): T {
+        if (point is ElementGeneratePoint<*>) {
+            val target = point.target
+            val commentElem = point.factory.createDocCommentFromText(REQUESTING_MESSAGE, target)
+            CommentWriter.writeJavadoc(point.project, target, commentElem)
+        }
         return point
     }
 }
@@ -67,7 +70,7 @@ class NoticeRequestingProcessor<T : PsiElement> : Processor<T>, PriorityOrdered 
 /**
  * 对方法请求限流
  */
-class RequestLimitedProcessor<T : PsiElement>
+class RequestLimitedProcessor<T : Point<*>>
     (private val processor: NoticeRequestingProcessor<T> = NoticeRequestingProcessor()) :
     Processor<T> by processor,
     FailureProcessor<T> {
@@ -77,31 +80,35 @@ class RequestLimitedProcessor<T : PsiElement>
 
     private val cache = ConcurrentHashMap<String, Int>()
 
-    override fun beforeRequest(point: GeneratePoint<T>): GeneratePoint<T>? {
+    override fun beforeRequest(point: T): T? {
+        if (point !is ElementGeneratePoint<*>) {
+            return processor.beforeRequest(point)
+        }
         val key = point.key
+        val target = point.target
         if (cache.containsKey(key)) {
-            val commentElem = point.factory.createDocCommentFromText(LIMITED_MESSAGE, point.target)
-            CommentWriter.writeJavadoc(point.project, point.target, commentElem)
+            val commentElem = point.factory.createDocCommentFromText(LIMITED_MESSAGE, target)
+            CommentWriter.writeJavadoc(point.project, target, commentElem)
             return null
         }
         cache[key] = 0
         return processor.beforeRequest(point)
     }
 
-    override fun afterResponse(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+    override fun afterResponse(point: T, result: GenerateResult): GenerateResult {
         cache.remove(point.key)
         return result
     }
 
-    override fun afterFailure(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+    override fun afterFailure(point: T, result: GenerateResult): GenerateResult {
         cache.remove(point.key)
         return result
     }
 }
 
-class WrapCommentProcessor<T : PsiElement>(val limit: Int = 60) : Processor<T> {
+class WrapCommentProcessor<T : Point<*>>(val limit: Int = 60) : Processor<T> {
     override val order = Ordered.LOWEST_PRECEDENCE
-    override fun afterResponse(point: GeneratePoint<T>, result: GenerateResult): GenerateResult {
+    override fun afterResponse(point: T, result: GenerateResult): GenerateResult {
         val content = result.content
         if (content.isEmpty()) {
             return result
