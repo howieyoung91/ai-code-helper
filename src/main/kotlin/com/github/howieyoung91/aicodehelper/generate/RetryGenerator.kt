@@ -48,6 +48,14 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
         var count = cache.computeIfAbsent(point) { 0 }
         if (++count > maxRetryCount.get()) {
             cache.remove(point)
+            if (code != 200) {
+                val errorBody = response.errorBody()!!
+                return proxy(
+                    response,
+                    "Fail to generate.\nCause: ${errorBody.string()}",
+                    errorBody
+                )
+            }
             return response
         }
         cache[point] = count
@@ -55,11 +63,10 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
 
         return if (code != 200) {
             val errorBody = response.errorBody()!!
-            Response.error(
-                ProxyResponseBody(
-                    errorBody,
-                    "Fail to generate. Retrying $count/${maxRetryCount.get()}\nCause: ${errorBody.string()}"
-                ), response.raw()
+            proxy(
+                response,
+                "Fail to generate. Retrying $count/${maxRetryCount.get()}\nCause: ${errorBody.string()}",
+                errorBody
             )
         }
         else {
@@ -68,6 +75,14 @@ abstract class RetryGenerator<T : PsiElement> : AbstractAsyncGenerator<T>() {
             response
         }
     }
+
+    private fun proxy(
+        response: Response<CompletionResponse>,
+        s: String,
+        errorBody: ResponseBody,
+    ): Response<CompletionResponse> = Response.error(
+        ProxyResponseBody(errorBody, s), response.raw()
+    )
 }
 
 private class ProxyResponseBody(private val actual: ResponseBody, private val string: String = "") : ResponseBody() {
