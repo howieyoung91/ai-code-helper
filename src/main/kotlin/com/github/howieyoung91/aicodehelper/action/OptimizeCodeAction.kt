@@ -17,7 +17,7 @@ import com.intellij.openapi.editor.Editor
  * @author Howie Young
  * @date 2023/03/18 14:12
  */
-class OptimizedCodeAction : AnAction() {
+class OptimizeCodeAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor = e.getData(CommonDataKeys.EDITOR) ?: return
         OptimizedCodeGenerator.generate(SelectionPoint(Query(""), editor.selectionModel))
