@@ -1,10 +1,37 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.howieyoung91.ai-code-helper</id>
+    <id>com.github.howieyoung91.aicodehelper</id>
     <name>AI Code Helper</name>
     <vendor email="ishowieyoung@icloud.com">Howie Young</vendor>
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+
+    <description><![CDATA[
+    <p>This plugin allows you to <strong>generate and analyze code using ChatGPT</strong>.</p>
+    <h2 id="feature">Feature</h2>
+    <ul>
+        <li>Generate comment for method</li>
+        <li>Generate comment for all methods in class</li>
+        <li>Generate comment for Class</li>
+        <li>Generate comment for Class and Methods</li>
+        <li>Optimize code</li>
+    </ul>
+    <h2 id="usage">Usage</h2>
+    <p>First of all, you must fill your <code>API Key</code>.<br>
+        <code>Setting</code> &gt; <code>Tools</code> &gt; <code>Ai Code Helper</code> &gt; <code>API key</code>
+    </p>
+    <p><img src="https://raw.githubusercontent.com/howieyoung91/ai-code-helper/main/doc/assets/img/apikey.png" loading="lazy" alt="apikey"></p>
+    <p>Then you can use following actions.</p>
+    <ol>
+        <li><code>Generate</code> &gt; <code>Generate Comment for Method</code></li>
+        <li><code>Generate</code> &gt; <code>Generate Comment for All Methods in Class</code></li>
+        <li><code>Generate</code> &gt; <code>Generate Comment for Class</code></li>
+        <li><code>Generate</code> &gt; <code>Generate Comment for Class and Methods</code></li>
+        <li><code>Generate</code> &gt; <code>Optimize Code</code></li>
+    </ol>
+    <p><img src="https://raw.githubusercontent.com/howieyoung91/ai-code-helper/main/doc/assets/img/commands.png" loading="lazy" alt="commands"></p>
+    <p>Happy coding! 🎉</p>
+    ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
 
