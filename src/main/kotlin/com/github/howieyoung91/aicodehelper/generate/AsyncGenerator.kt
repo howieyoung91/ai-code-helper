@@ -24,10 +24,7 @@ abstract class AsyncGenerator<T : Point<*>, REQ, RESP> : AdvancedGenerator<T, RE
 
     protected abstract fun doRequest(request: REQ, point: T)
 
-    protected fun defaultCallback(
-        point: T,
-        request: REQ,
-    ) = object : Callback<RESP> {
+    protected fun defaultCallback(point: T, request: REQ) = object : Callback<RESP> {
         override fun onResponse(call: Call<RESP>, response: Response<RESP>) {
             val resolvedResponse = beforeResponse(point, call, request, response)
             var result = onResponse(point, resolvedResponse)

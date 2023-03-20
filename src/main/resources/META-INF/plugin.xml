@@ -73,5 +73,9 @@
             <separator/>
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </group>
+        <action id="com.github.howieyoung91.aicodehelper.action.CustomizeTemplateAction"
+                class="com.github.howieyoung91.aicodehelper.action.CustomizeTemplateAction" text="Custmize Template">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>

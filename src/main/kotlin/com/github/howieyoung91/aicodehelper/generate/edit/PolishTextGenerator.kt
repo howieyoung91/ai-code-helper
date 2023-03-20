@@ -62,7 +62,6 @@ object PolishTextGenerator : EditGenerator<ElementPoint<PsiComment>>() {
                         target.tokenType == JavaTokenType.C_STYLE_COMMENT -> "/* $content */"
                         else -> "// $content"
                     }
-                    println(123)
                     target.replace(
                         when (target) {
                             is PsiDocComment -> point.factory.createDocCommentFromText(notification, target)
