@@ -1,4 +1,4 @@
-# AI Coder Helper
+# AI Code Helper
 
 This plugin allows you to **generate and analyze code using ChatGPT**.
 
